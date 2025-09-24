@@ -1,0 +1,21 @@
+img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+    float: left;
+    margin-right: 10px;
+    }
+p.title {
+    font-weight: bold;
+}
+
+button.plusButton{
+    border-radius:10px;
+    float: right
+}
+
+button.patternButton{
+    height: 90px;
+    float:  left;
+}
