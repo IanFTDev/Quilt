@@ -85,14 +85,48 @@ class plusPattern{
 
 class Quilt{
     constructor(containerId){
-        container = document.getElementById(containerId)
+        this.container = document.getElementById(containerId);
+
+        //An array of tiles
+        this.tiles = this.createQuilt(10, 10);
     }
+
+
+    createQuilt(width, height){
+        let newTiles = [];
+        for(let x = 0; x < width; x++){
+            for(let y = 0; y < height; y++){
+                newTiles.push(new Tile(this.container));
+            }
+        }
+
+        return this.tiles = newTiles;
+    }
+
+    
 }
 
 
 class Tile{
     constructor(container){
         this.container = container;
+        this.img;
+
+        this.button = this.createSelf();
+    }
+
+    createSelf(){
+        const btn = document.createElement('button');
+        btn.textContent = "Tile";
+        btn.classList.add("tileButton");
+
+        const img = document.createElement('image');
+        img.src = 'images/pattern.png';
+        img.alt = 'Quilt Pattern';
+        btn.appendChild(img);
+        
+        this.container.appendChild(btn);
+        return btn;
     }
 }
 
