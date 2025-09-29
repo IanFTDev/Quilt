@@ -1,3 +1,6 @@
+
+let currentPattern;
+
 //A class Repersenting each new pattern
 class Pattern{
     constructor(conainter, id){
@@ -15,17 +18,25 @@ class Pattern{
         hiddenUpload.type = 'file'
         hiddenUpload.accept = 'image/*'
     
-       
+       const clickController = new AbortController();
         
         btn.addEventListener("click", () => {
             hiddenUpload.click();
-        });
+        }, { signal: clickController.signal });
 
+        const hiddenController = new AbortController();
         hiddenUpload.addEventListener("change", (event) =>{
             const file = event.target.files[0];
             if (file){
                 if(file.type == 'image/jpeg' || file.type == 'image/png'){
                     this.addImg(file);
+                    clickController.abort();
+                    
+                    btn.addEventListener("click", () => {
+                        this.patternSelecter(file);
+                    });
+
+                    hiddenController.abort();
                 }else{
                     alert("Please select jpeg, or png file");
                 }
@@ -33,11 +44,12 @@ class Pattern{
             }else{
                 console.log('File Not selected');
             }
-        })
+        }, { signal: hiddenController.signal });
 
         this.container.appendChild(btn);
         return btn;
     }
+
     
     
     addImg(file){
@@ -53,6 +65,11 @@ class Pattern{
         this.button.textContent = '';
 
         this.button.appendChild(img);
+    }
+
+    patternSelecter(file){
+        const imgUrl = URL.createObjectURL(file);
+        currentPattern = imgUrl;
     }
 }
 
@@ -113,20 +130,31 @@ class Tile{
         this.img;
 
         this.button = this.createSelf();
+        
     }
 
     createSelf(){
         const btn = document.createElement('button');
-        btn.textContent = "Tile";
+        // btn.textContent = "Tile";
         btn.classList.add("tileButton");
-
-        const img = document.createElement('image');
-        img.src = 'images/pattern.png';
-        img.alt = 'Quilt Pattern';
-        btn.appendChild(img);
-        
         this.container.appendChild(btn);
+
+        btn.addEventListener('click', () => this.addPattern());
+
         return btn;
+    }
+
+    addPattern(){
+        if (currentPattern){
+            if(!this.img){
+                const img = document.createElement('img');
+                img.classList.add('tileImage');
+                this.img = img
+                this.button.appendChild(img);
+            }
+            this.img.src = currentPattern;
+            this.img.alt = 'Quilt Pattern';
+        }
     }
 }
 

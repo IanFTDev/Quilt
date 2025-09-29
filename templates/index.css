@@ -18,4 +18,11 @@ button.plusButton{
 button.patternButton{
     height: 90px;
     float:  left;
+    object-fit:cover;
+}
+
+button.tileButton{
+    height: 90px;
+    width: 90px;
+    object-fit: cover;
 }
