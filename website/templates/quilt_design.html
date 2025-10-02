@@ -1,0 +1,47 @@
+{% extends "base.html" %} {% block title %}Quilt Designer{% endblock %} {% block
+content %}
+<div class="row mt-4">
+  <div class="col-md-12">
+    <h2 class="text-center mb-4">Quilt Designer</h2>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Pattern Selection Panel -->
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Pattern Library</h5>
+      </div>
+      <div class="card-body" id="button-container">
+        <!-- Pattern buttons will be added here dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Quilt Canvas -->
+  <div class="col-md-9">
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Your Quilt Design</h5>
+      </div>
+      <div class="card-body">
+        <div id="quilt-layout" class="quilt-grid">
+          <!-- Quilt tiles will be added here dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<link
+  rel="stylesheet"
+  href="{{url_for('static', filename='quilt_design.css')}}"
+/>
+
+<script
+  type="text/javascript"
+  src="{{url_for('static', filename='quilt_design.js')}}"
+></script>
+
+{% endblock %}
