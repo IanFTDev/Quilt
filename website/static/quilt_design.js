@@ -108,9 +108,13 @@ class plusPattern {
 }
 
 class Quilt {
-  constructor(containerId) {
+  constructor(containerId, cols = 10, rows = 10) {
     this.container = document.getElementById(containerId);
-    this.tiles = this.createQuilt(10, 10);
+    this.tiles = this.createQuilt(cols, rows);
+
+    const grid = document.querySelector(".quilt-grid");
+    grid.style.setProperty("--grid-columns", cols);
+    grid.style.setProperty("--grid-rows", rows);
   }
 
   createQuilt(width, height) {
@@ -154,7 +158,3 @@ class Tile {
     }
   }
 }
-
-// Initialize the application
-const buttonSpawner = new plusPattern("button-container");
-const quiltSpawner = new Quilt("quilt-layout");

@@ -17,6 +17,29 @@ content %}
         <!-- Pattern buttons will be added here dynamically -->
       </div>
     </div>
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Dimensions</h5>
+      </div>
+      <div class="card-body" id="dimension-container">
+        <form
+          method="POST"
+          action="{{ url_for('resources.update_dimensions') }}"
+        >
+          <input
+            type="integer"
+            name="quiltHeight"
+            placeholder="Enter Quilt Height"
+          />
+          <input
+            type="integer"
+            name="quiltWidth"
+            placeholder="Enter Quilt Width"
+          />
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
   </div>
 
   <!-- Quilt Canvas -->
@@ -43,5 +66,10 @@ content %}
   type="text/javascript"
   src="{{url_for('static', filename='quilt_design.js')}}"
 ></script>
+
+<script>
+  const buttonSpawner = new plusPattern("button-container");
+  const quiltSpawner = new Quilt("quilt-layout", {{ cols }}, {{ rows }});
+</script>
 
 {% endblock %}

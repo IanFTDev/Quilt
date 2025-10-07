@@ -53,15 +53,17 @@
 
 /* Quilt Grid Styles */
 .quilt-grid {
+  --grid-columns: 10;
+  --grid-rows: 10;
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-auto-rows: 1fr;
+  grid-template-columns: repeat(var(--grid-columns), 1fr);
+  grid-template-rows: repeat(var(--grid-rows), auto);
   gap: 2px;
   background: #e9ecef;
   padding: 10px;
   border-radius: 8px;
   max-width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: auto;
 }
 
 .tileButton {
