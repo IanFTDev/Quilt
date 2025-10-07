@@ -110,14 +110,14 @@ class plusPattern {
 class Quilt {
   constructor(containerId, cols = 10, rows = 10) {
     this.container = document.getElementById(containerId);
-    this.tiles = this.createQuilt(cols, rows);
-
+    // this.tiles = this.createSquareQuilt(cols, rows);
+    this.tiles = this.createHexQuilt(cols, rows);
     const grid = document.querySelector(".quilt-grid");
     grid.style.setProperty("--grid-columns", cols);
     grid.style.setProperty("--grid-rows", rows);
   }
 
-  createQuilt(width, height) {
+  createSquareQuilt(width, height) {
     let newTiles = [];
     for (let x = 0; x < width; x++) {
       for (let y = 0; y < height; y++) {
@@ -125,6 +125,23 @@ class Quilt {
       }
     }
     return (this.tiles = newTiles);
+  }
+  createHexQuilt(cols, rows) {
+    let newTiles = [];
+
+    for (let row = 0; row < rows; row++) {
+      const rowDiv = document.createElement("div");
+      rowDiv.classList.add("hex-row");
+
+      for (let col = 0; col < cols; col++) {
+        const tile = new Tile(rowDiv);
+        newTiles.push(tile);
+      }
+
+      this.container.appendChild(rowDiv);
+    }
+
+    return newTiles;
   }
 }
 

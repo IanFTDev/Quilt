@@ -51,50 +51,6 @@
   object-fit: contain;
 }
 
-/* Quilt Grid Styles */
-.quilt-grid {
-  --grid-columns: 10;
-  --grid-rows: 10;
-  display: grid;
-  grid-template-columns: repeat(var(--grid-columns), 1fr);
-  grid-template-rows: repeat(var(--grid-rows), auto);
-  gap: 2px;
-  background: #e9ecef;
-  padding: 10px;
-  border-radius: 8px;
-  max-width: 100%;
-  aspect-ratio: auto;
-}
-
-.tileButton {
-  aspect-ratio: 1;
-  min-width: 50px;
-  min-height: 50px;
-  background: white;
-  border: 1px solid #dee2e6;
-  cursor: pointer;
-  transition: all 0.2s;
-  padding: 0;
-  overflow: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.tileButton:hover {
-  border-color: #28a745;
-  box-shadow: 0 0 8px rgba(40, 167, 69, 0.3);
-  transform: scale(1.05);
-  z-index: 10;
-}
-
-.tileImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 /* Custom scrollbar for pattern library */
 #button-container::-webkit-scrollbar {
   width: 8px;
