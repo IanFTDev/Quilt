@@ -6,8 +6,9 @@ views = Blueprint('views', __name__)
 @views.route('/')
 @login_required
 def home():
-    if session['quilt_height'] == None:
+
+    if 'quilt_height' not in session:
         session['quilt_height'] = 2
-    if session['quilt_width'] == None:
+    if 'quilt_width' not in session:
         session['quilt_width'] = 2
     return render_template("quilt_design.html", user=current_user, cols = session['quilt_width'], rows = session['quilt_height'])
