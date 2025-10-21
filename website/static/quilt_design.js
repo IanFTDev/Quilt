@@ -3,12 +3,35 @@ let currentProjectID;
 
 // A class Representing each new pattern
 class Pattern {
-  constructor(container, id) {
+  constructor(container, id, file = null) {
     this.container = container;
     this.id = id;
-    this.button = this.createSelf();
+
+    if (file == null) {
+      this.button = this.createSelf();
+    } else {
+      this.button = this.loadSelf(file);
+    }
   }
 
+  loadSelf(file) {
+    const btn = document.createElement("button");
+    btn.classList.add("patternButton");
+
+    // For loaded patterns, the file is a URL string, not a File object
+    const img = document.createElement("img");
+    img.src = file; // file is actually the URL string
+    img.alt = "Quilt Pattern";
+
+    btn.appendChild(img);
+
+    btn.addEventListener("click", () => {
+      this.patternSelecter(file);
+    });
+
+    this.container.insertBefore(btn, this.container.lastChild);
+    return btn;
+  }
   createSelf() {
     const btn = document.createElement("button");
     btn.textContent = "Choose Pattern";
@@ -36,6 +59,7 @@ class Pattern {
         if (file) {
           if (file.type == "image/jpeg" || file.type == "image/png") {
             this.addImg(file);
+            this.uploadImage(file);
             clickController.abort();
 
             btn.addEventListener("click", () => {
@@ -69,8 +93,6 @@ class Pattern {
     img.alt = "Quilt Pattern";
     this.button.textContent = "";
     this.button.appendChild(img);
-
-    this.uploadImage(file);
   }
 
   async uploadImage(file) {
@@ -96,7 +118,15 @@ class Pattern {
   }
 
   patternSelecter(file) {
-    const imgUrl = URL.createObjectURL(file);
+    let imgUrl;
+
+    // Check if it's a File object or already a URL string
+    if (file instanceof File || file instanceof Blob) {
+      imgUrl = URL.createObjectURL(file);
+    } else {
+      imgUrl = file; // It's already a URL string
+    }
+
     currentPattern = imgUrl;
 
     // Visual feedback for selected pattern

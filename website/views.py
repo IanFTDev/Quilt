@@ -18,12 +18,14 @@ def projects():
 @login_required
 def view_project(project_id):    
     project = Project.query.get_or_404(project_id)
-    print(project.patterns)
     if project.user_id != current_user.id:
         abort(403)
     
     cols = project.columns
     rows = project.rows
 
-    return render_template("quilt_design.html", user=current_user, cols = cols, rows = rows , projectID = project_id)
+    all_patterns = project.patterns
+
+
+    return render_template("quilt_design.html", user=current_user, cols = cols, rows = rows , projectID = project_id, all_patterns = all_patterns)
 

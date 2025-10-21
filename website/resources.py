@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, session, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, flash, session, redirect, url_for, jsonify, send_from_directory
 from .models import Pattern, Project
 from . import db
 from flask_login import login_required, current_user
@@ -45,9 +45,9 @@ def upload_pattern():
     projectID = request.form['projectID']
     filename = secure_filename(file.filename)
   
-    user_upload_folder = os.path.join(UPLOAD_FOLDER, f"user_{current_user.id}")
-    user_upload_folder = os.path.join(user_upload_folder, f"/project_{projectID}")
-    os.makedirs(user_upload_folder, exist_ok=True)
+    
+    user_upload_folder = os.path.join(f"user_{current_user.id}", f"project_{projectID}")
+    os.makedirs(os.path.join(UPLOAD_FOLDER, user_upload_folder), exist_ok=True)
 
 
     # Store the path relative to your server
@@ -68,7 +68,7 @@ def upload_pattern():
     db.session.commit()
     
     # Save to YOUR server's filesystem
-    file.save(filepath)
+    file.save(os.path.join(UPLOAD_FOLDER, filepath))
 
 
 
@@ -87,3 +87,9 @@ def create_project():
     return jsonify({'success': True, 'project_id': new_project.id}), 200
 
 
+
+@resources.route('/uploads/<path:filename>')
+@login_required
+def serve_upload(filename):
+    print(UPLOAD_FOLDER + filename)
+    return send_from_directory(UPLOAD_FOLDER, filename)

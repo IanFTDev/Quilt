@@ -74,6 +74,12 @@ content %}
 <script>
   const buttonSpawner = new plusPattern("button-container");
   const quiltSpawner = new Quilt("quilt-layout", {{ cols }}, {{ rows }}, {{projectID}});
+  const buttonContainer = document.getElementById("button-container");
+
+  loaded_patterns = [];
+  {% for p in all_patterns %}
+    loaded_patterns.push(new Pattern(buttonContainer, buttonSpawner.count++, "/uploads/{{ p.image_path }}"));
+  {% endfor %}
 </script>
 
 {% endblock %}
