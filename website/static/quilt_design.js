@@ -1,4 +1,5 @@
 let currentPattern;
+let currentProjectID;
 
 // A class Representing each new pattern
 class Pattern {
@@ -75,6 +76,7 @@ class Pattern {
   async uploadImage(file) {
     const formData = new FormData();
     formData.append("image", file);
+    formData.append("projectID", currentProjectID);
 
     try {
       const response = await fetch("/upload-pattern", {
@@ -131,12 +133,13 @@ class plusPattern {
 }
 
 class Quilt {
-  constructor(containerId, cols = 10, rows = 10) {
+  constructor(containerId, cols = 10, rows = 10, currentProject) {
     this.container = document.getElementById(containerId);
     this.tiles = this.createSquareQuilt(cols, rows);
     const grid = document.querySelector(".quilt-grid");
     grid.style.setProperty("--grid-columns", cols);
     grid.style.setProperty("--grid-rows", rows);
+    currentProjectID = currentProject;
   }
 
   createSquareQuilt(width, height) {

@@ -24,7 +24,7 @@ content %}
       <div class="card-body" id="dimension-container">
         <form
           method="POST"
-          action="{{ url_for('resources.update_dimensions') }}"
+          action="{{ url_for('resources.update_dimensions', project_id=projectID) }}"
         >
           <input
             type="integer"
@@ -73,7 +73,7 @@ content %}
 
 <script>
   const buttonSpawner = new plusPattern("button-container");
-  const quiltSpawner = new Quilt("quilt-layout", {{ cols }}, {{ rows }});
+  const quiltSpawner = new Quilt("quilt-layout", {{ cols }}, {{ rows }}, {{projectID}});
 </script>
 
 {% endblock %}
