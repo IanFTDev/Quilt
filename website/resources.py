@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, request, flash, session, redirect, url_for
+from flask import Blueprint, render_template, request, flash, session, redirect, url_for, jsonify
 from .models import Pattern
 from . import db
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 import os
+
 
 UPLOAD_FOLDER = 'server/patterns/'
 
@@ -38,16 +39,24 @@ def upload_pattern():
     user_upload_folder = os.path.join(UPLOAD_FOLDER, f"user_{current_user.id}")
     os.makedirs(user_upload_folder, exist_ok=True)
 
-    filepath = user_upload_folder + '_'+ filename
+    
+    
 
     # Store the path relative to your server
-    new_pattern = Pattern(image_path=filepath)
+    new_pattern = Pattern()
     db.session.add(new_pattern)
+    db.session.flush()
+    filepath = user_upload_folder + '/' + filename
+    name, ext = os.path.splitext(filepath)
+    filepath = f"{name}_{new_pattern.id}{ext}"
+
+    new_pattern.image_path = filepath
+    
     db.session.commit()
     
     # Save to YOUR server's filesystem
     file.save(filepath)
-    return
+    return jsonify({'success': True, 'pattern_id': new_pattern.id}), 200
 
 
 
