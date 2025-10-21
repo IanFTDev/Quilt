@@ -7,6 +7,7 @@ import os
 
 UPLOAD_FOLDER = 'server/patterns/'
 
+
 resources = Blueprint('resources', __name__)
 
 
@@ -29,22 +30,24 @@ def update_dimensions():
     return redirect(url_for('views.home'))
 
 
-# @resources.route('/upload-pattern', methods = ['POST'])
-# def upload_pattern():
-#     file = request.files['image']
-#     filename = secure_filename(file.filename)
+@resources.route('/upload-pattern', methods = ['POST'])
+def upload_pattern():
+    file = request.files['image']
+    filename = secure_filename(file.filename)
+  
+    user_upload_folder = os.path.join(UPLOAD_FOLDER, f"user_{current_user.id}")
+    os.makedirs(user_upload_folder, exist_ok=True)
 
-#     # Store the path relative to your server
-#     new_pattern = Pattern(image_path=filepath)
-#     db.session.add(new_pattern)
-#     db.session.commit()
+    filepath = user_upload_folder + '_'+ filename
 
-
-#     # Save to YOUR server's filesystem
-#     filepath = os.path.join(UPLOAD_FOLDER, f"pattern_{new_pattern.id}_{filename}")
-#     file.save(filepath)
-
-#     return
+    # Store the path relative to your server
+    new_pattern = Pattern(image_path=filepath)
+    db.session.add(new_pattern)
+    db.session.commit()
+    
+    # Save to YOUR server's filesystem
+    file.save(filepath)
+    return
 
 
 

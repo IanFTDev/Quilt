@@ -68,6 +68,29 @@ class Pattern {
     img.alt = "Quilt Pattern";
     this.button.textContent = "";
     this.button.appendChild(img);
+
+    this.uploadImage(file);
+  }
+
+  async uploadImage(file) {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await fetch("/upload-pattern", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Upload successful:", result);
+      } else {
+        console.error("Upload failed:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
   }
 
   patternSelecter(file) {
