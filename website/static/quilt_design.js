@@ -202,6 +202,7 @@ class Tile {
 
   addPattern() {
     if (currentPattern) {
+      console.log("Current pattern URL:", currentPattern);
       if (!this.img) {
         const img = document.createElement("img");
         img.classList.add("tileImage");
