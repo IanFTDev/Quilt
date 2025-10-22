@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 import os
 
 
-UPLOAD_FOLDER = 'server/patterns/'
+UPLOAD_FOLDER = os.path.abspath('server/patterns/')
 
 DEFAULT_COLUMNS = 6
 DEFAULT_ROWS = 6
@@ -34,7 +34,6 @@ def update_dimensions(project_id):
     else:
         flash("Input a postive number", category='error')
     
-
     return redirect(url_for('views.view_project', project_id=project_id))
 
 
@@ -70,8 +69,6 @@ def upload_pattern():
     # Save to YOUR server's filesystem
     file.save(os.path.join(UPLOAD_FOLDER, filepath))
 
-
-
     return jsonify({'success': True, 'pattern_id': new_pattern.id}), 200
 
 
@@ -91,5 +88,7 @@ def create_project():
 @resources.route('/uploads/<path:filename>')
 @login_required
 def serve_upload(filename):
-    print(UPLOAD_FOLDER + filename)
+    print(f"Requested: {filename}")
+    print(f"Full path: {os.path.join(UPLOAD_FOLDER, filename)}")
+    print(f"File exists: {os.path.exists(os.path.join(UPLOAD_FOLDER, filename))}")
     return send_from_directory(UPLOAD_FOLDER, filename)
