@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block title %}Project Manager{% endblock %} {%
+block content %}
+
+<h1>Project Manager</h1>
+<div id="projectContainer"></div>
+
+<script
+  type="text/javascript"
+  src="{{url_for('static', filename='projects.js')}}"
+></script>
+<script>
+
+  projects = [];
+  {% for p in user_projects %}
+
+    projects.push(new Project(projectContainer,  {{ p.id }}));
+  {% endfor %}
+</script>
+{% endblock %}
