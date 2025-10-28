@@ -13,38 +13,51 @@ DEFAULT_ROWS = 6
 
 resources = Blueprint('resources', __name__)
 
-
-@resources.route('/dimensions-update/<int:project_id>', methods = ['POST'])
+@resources.route('/dimensions-update/<int:project_id>', methods=['POST'])
 @login_required
 def update_dimensions(project_id):
     quiltHeight = request.form.get('quiltHeight')
     quiltWidth = request.form.get('quiltWidth')
 
-
     project = Project.query.get_or_404(project_id)
 
-    if quiltWidth.isdigit() and quiltHeight.isdigit():
-        if int(quiltHeight) > 0 and int(quiltWidth) > 0:
-            project.columns = int(quiltWidth)
-            project.rows = int(quiltHeight)
-            db.session.commit()
-            return redirect(url_for('views.view_project', project_id=project_id))
-        else:
-            flash("Input a positive number", category='error')
-    else:
-        flash("Input a postive number", category='error')
-
+    # Validate input
+    if not (quiltWidth.isdigit() and quiltHeight.isdigit()):
+        flash("Input a positive number", category='error')
+        return redirect(url_for('views.view_project', project_id=project_id))
     
-    for tile in project.tiles:
-        if tile.column >= project.columns:
-            project.tiles.remove(tile)
-            db.session.delete(tile)
+    new_width = int(quiltWidth)
+    new_height = int(quiltHeight)
+    
+    if new_width <= 0 or new_height <= 0:
+        flash("Input a positive number", category='error')
+        return redirect(url_for('views.view_project', project_id=project_id))
+
+    # Delete tiles that are out of bounds
+    tiles_to_delete = [tile for tile in project.tiles 
+                       if tile.column >= new_width or tile.row >= new_height]
+    
+    for tile in tiles_to_delete:
+        db.session.delete(tile)
+    
+    # Update dimensions
+    project.columns = new_width
+    project.rows = new_height
+    
+    # Create new tiles for expanded dimensions
+    existing_positions = {(tile.column, tile.row) for tile in project.tiles}
+    
+    for x in range(new_width):
+        for y in range(new_height):
+            if (x, y) not in existing_positions:
+                new_tile = Tile()
+                new_tile.row = y
+                new_tile.column = x
+                project.tiles.append(new_tile)
+    
     db.session.commit()
-
-    
     
     return redirect(url_for('views.view_project', project_id=project_id))
-
 
 @resources.route('/download-pattern', methods = ['POST'])
 @login_required
