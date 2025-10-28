@@ -101,7 +101,7 @@ class Pattern {
     formData.append("projectID", currentProjectID);
 
     try {
-      const response = await fetch("/upload-pattern", {
+      const response = await fetch("/download-pattern", {
         method: "POST",
         body: formData,
       });
@@ -165,7 +165,7 @@ class plusPattern {
 class Quilt {
   constructor(containerId, cols = 10, rows = 10, currentProject) {
     this.container = document.getElementById(containerId);
-    this.tiles = this.createSquareQuilt(cols, rows);
+    // this.tiles = this.createSquareQuilt(cols, rows);
     const grid = document.querySelector(".quilt-grid");
     grid.style.setProperty("--grid-columns", cols);
     grid.style.setProperty("--grid-rows", rows);
@@ -184,10 +184,16 @@ class Quilt {
 }
 
 class Tile {
-  constructor(container) {
+  constructor(container, img = null) {
+    console.log(img);
     this.container = container;
-    this.img = null;
+
     this.button = this.createSelf();
+    if (img) {
+      this.img = this.addPattern(img);
+    } else {
+      this.img = null;
+    }
   }
 
   createSelf() {
@@ -195,21 +201,20 @@ class Tile {
     btn.classList.add("tileButton");
     this.container.appendChild(btn);
 
-    btn.addEventListener("click", () => this.addPattern());
+    btn.addEventListener("click", () => this.addPattern(currentPattern));
 
     return btn;
   }
 
-  addPattern() {
-    if (currentPattern) {
-      console.log("Current pattern URL:", currentPattern);
+  addPattern(toAdd) {
+    if (toAdd) {
       if (!this.img) {
         const img = document.createElement("img");
         img.classList.add("tileImage");
         this.img = img;
         this.button.appendChild(img);
       }
-      this.img.src = currentPattern;
+      this.img.src = toAdd;
       this.img.alt = "Quilt Pattern";
     }
   }

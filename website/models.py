@@ -21,7 +21,17 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     patterns = db.relationship('Pattern', backref='project')
+    tiles = db.relationship('Tile', backref='project')
     columns = db.Column(db.Integer)
     rows = db.Column(db.Integer)
+
+
+class Tile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pattern_id = db.Column(db.Integer, db.ForeignKey('pattern.id'))
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
+    column = db.Column(db.Integer)
+    row = db.Column(db.Integer)
+
 
     

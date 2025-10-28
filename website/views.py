@@ -26,6 +26,15 @@ def view_project(project_id):
 
     all_patterns = project.patterns
 
+    all_tiles = project.tiles
+    
 
-    return render_template("quilt_design.html", user=current_user, cols = cols, rows = rows , projectID = project_id, all_patterns = all_patterns)
+    return render_template(
+        "quilt_design.html",
+        user=current_user,
+        cols = cols,
+        rows = rows ,
+        projectID = project_id,
+        all_patterns = all_patterns,
+        all_tiles = all_tiles)
 

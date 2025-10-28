@@ -75,10 +75,20 @@ content %}
   const buttonSpawner = new plusPattern("button-container");
   const quiltSpawner = new Quilt("quilt-layout", {{ cols }}, {{ rows }}, {{projectID}});
   const buttonContainer = document.getElementById("button-container");
+  const tileContainer = document.getElementById("quilt-layout");
 
   loaded_patterns = [];
   {% for p in all_patterns %}
     loaded_patterns.push(new Pattern(buttonContainer, buttonSpawner.count++, "/uploads/{{ p.image_path }}"));
+  {% endfor %}
+
+  loaded_tiles = []
+  {% for t in all_tiles %}
+    {% if t.pattern_id %}
+      loaded_tiles.push(new Tile(tileContainer, "/uploads-tile-pattern/{{ t.pattern_id }}"));
+    {% else %}
+      loaded_tiles.push(new Tile(tileContainer, null));
+    {% endif %}
   {% endfor %}
 </script>
 

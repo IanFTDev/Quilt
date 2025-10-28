@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, session, redirect, url_for, jsonify, send_from_directory
-from .models import Pattern, Project
+from .models import Pattern, Project, Tile
 from . import db
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
@@ -33,13 +33,22 @@ def update_dimensions(project_id):
             flash("Input a positive number", category='error')
     else:
         flash("Input a postive number", category='error')
+
+    
+    for tile in project.tiles:
+        if tile.column >= project.columns:
+            project.tiles.remove(tile)
+            db.session.delete(tile)
+    db.session.commit()
+
+    
     
     return redirect(url_for('views.view_project', project_id=project_id))
 
 
-@resources.route('/upload-pattern', methods = ['POST'])
+@resources.route('/download-pattern', methods = ['POST'])
 @login_required
-def upload_pattern():
+def download_pattern():
     file = request.files['image']
     projectID = request.form['projectID']
     filename = secure_filename(file.filename)
@@ -80,6 +89,17 @@ def create_project():
     new_project = Project(user_id=current_user.id, columns=DEFAULT_COLUMNS, rows=DEFAULT_ROWS)
     db.session.add(new_project)
     db.session.commit()
+
+
+    #populates the list of tiles
+    for x in range(new_project.columns):
+        for y in range(new_project.rows):
+            new_tile = Tile()
+            new_project.tiles.append(new_tile)
+            new_tile.row = x
+            new_tile.column = y
+
+    db.session.commit()
     
     return jsonify({'success': True, 'project_id': new_project.id}), 200
 
@@ -88,7 +108,29 @@ def create_project():
 @resources.route('/uploads/<path:filename>')
 @login_required
 def serve_upload(filename):
-    print(f"Requested: {filename}")
-    print(f"Full path: {os.path.join(UPLOAD_FOLDER, filename)}")
-    print(f"File exists: {os.path.exists(os.path.join(UPLOAD_FOLDER, filename))}")
+
     return send_from_directory(UPLOAD_FOLDER, filename)
+
+@resources.route('/uploads-tile-pattern/<int:pattern_id>')
+@login_required
+def serve_tile_pattern_request(pattern_id):
+    pattern = Pattern.query.get_or_404(pattern_id)
+
+    return serve_upload(pattern.image_path)
+
+
+@resources.route('/save-tile', methods= ['POST'])
+@login_required
+def save_tile():
+    tile_id = request.form['tile_id']
+    pattern_id = request.form['pattern_id']
+
+    tile = Tile.query.get_or_404(tile_id)
+
+    tile.pattern_id = pattern_id
+
+    db.session.commit()
+
+    return jsonify({'success': True}), 200
+
+
