@@ -1,9 +1,10 @@
 let currentPattern;
+let currentPatternID;
 let currentProjectID;
 
 // A class Representing each new pattern
 class Pattern {
-  constructor(container, id, file = null) {
+  constructor(container, id = -1, file = null) {
     this.container = container;
     this.id = id;
 
@@ -109,6 +110,7 @@ class Pattern {
       if (response.ok) {
         const result = await response.json();
         console.log("Upload successful:", result);
+        this.id = result.pattern_id;
       } else {
         console.error("Upload failed:", response.statusText);
       }
@@ -128,6 +130,7 @@ class Pattern {
     }
 
     currentPattern = imgUrl;
+    currentPatternID = this.id;
 
     // Visual feedback for selected pattern
     document.querySelectorAll(".patternButton").forEach((btn) => {
@@ -143,7 +146,6 @@ class Pattern {
 class plusPattern {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
-    this.count = 0;
     this.button = this.createSelf();
     this.patterns = [];
   }
@@ -154,7 +156,7 @@ class plusPattern {
     btn.classList.add("plusButton");
 
     btn.addEventListener("click", () => {
-      this.patterns.push(new Pattern(this.container, this.count++));
+      this.patterns.push(new Pattern(this.container));
     });
 
     this.container.appendChild(btn);
@@ -184,10 +186,9 @@ class Quilt {
 }
 
 class Tile {
-  constructor(container, img = null) {
-    console.log(img);
+  constructor(container, id, img = null) {
     this.container = container;
-
+    this.id = id;
     this.button = this.createSelf();
     if (img) {
       this.img = this.addPattern(img);
@@ -202,6 +203,7 @@ class Tile {
     this.container.appendChild(btn);
 
     btn.addEventListener("click", () => this.addPattern(currentPattern));
+    btn.addEventListener("click", () => this.saveTile(currentPattern));
 
     return btn;
   }
@@ -212,10 +214,37 @@ class Tile {
         const img = document.createElement("img");
         img.classList.add("tileImage");
         this.img = img;
+        this.button.innerHTML = "";
         this.button.appendChild(img);
       }
       this.img.src = toAdd;
       this.img.alt = "Quilt Pattern";
+    }
+  }
+
+  async saveTile(toAdd) {
+    console.log("SAVING TILE");
+    if (!toAdd) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append("tile_id", this.id);
+    formData.append("pattern_id", currentPatternID);
+
+    try {
+      const response = await fetch("/save-tile", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Upload successful:", result);
+      } else {
+        console.error("Upload failed:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error Saving Tile:", error);
     }
   }
 }

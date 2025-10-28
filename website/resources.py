@@ -122,15 +122,14 @@ def serve_tile_pattern_request(pattern_id):
 @resources.route('/save-tile', methods= ['POST'])
 @login_required
 def save_tile():
+    print(request.form)
     tile_id = request.form['tile_id']
     pattern_id = request.form['pattern_id']
 
     tile = Tile.query.get_or_404(tile_id)
 
     tile.pattern_id = pattern_id
-
     db.session.commit()
-
     return jsonify({'success': True}), 200
 
 

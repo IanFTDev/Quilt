@@ -79,15 +79,15 @@ content %}
 
   loaded_patterns = [];
   {% for p in all_patterns %}
-    loaded_patterns.push(new Pattern(buttonContainer, buttonSpawner.count++, "/uploads/{{ p.image_path }}"));
+    loaded_patterns.push(new Pattern(buttonContainer, {{p.id}}, "/uploads/{{ p.image_path }}"));
   {% endfor %}
 
   loaded_tiles = []
   {% for t in all_tiles %}
     {% if t.pattern_id %}
-      loaded_tiles.push(new Tile(tileContainer, "/uploads-tile-pattern/{{ t.pattern_id }}"));
+      loaded_tiles.push(new Tile(tileContainer, {{ t.id }} , "/uploads-tile-pattern/{{ t.pattern_id }}"));
     {% else %}
-      loaded_tiles.push(new Tile(tileContainer, null));
+      loaded_tiles.push(new Tile(tileContainer, {{t.id}}, null));
     {% endif %}
   {% endfor %}
 </script>
