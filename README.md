@@ -1,3 +1,1 @@
 # Quilt
-
-Jeremy was here
