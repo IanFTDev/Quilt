@@ -1,12 +1,29 @@
-from flask import Blueprint, render_template, request, flash, session, redirect, url_for, jsonify, send_from_directory
+from flask import Blueprint, render_template, request, flash, session, redirect, url_for, jsonify
 from .models import Pattern, Project, Tile
 from . import db
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 import os
+import boto3
+from botocore.exceptions import ClientError
+
+S3_BUCKET = os.environ.get('S3_BUCKET_NAME')
+S3_REGION = os.environ.get('AWS_REGION', 'us-east-1')
 
 
-UPLOAD_FOLDER = os.path.abspath('server/patterns/')
+def _s3():
+    return boto3.client('s3', region_name=S3_REGION)
+
+
+def _presigned_url(s3_key, expiry=3600):
+    try:
+        return _s3().generate_presigned_url(
+            'get_object',
+            Params={'Bucket': S3_BUCKET, 'Key': s3_key},
+            ExpiresIn=expiry
+        )
+    except ClientError:
+        return None
 
 DEFAULT_COLUMNS = 6
 DEFAULT_ROWS = 6
@@ -65,31 +82,20 @@ def download_pattern():
     file = request.files['image']
     projectID = request.form['projectID']
     filename = secure_filename(file.filename)
-  
-    
-    user_upload_folder = os.path.join(f"user_{current_user.id}", f"project_{projectID}")
-    os.makedirs(os.path.join(UPLOAD_FOLDER, user_upload_folder), exist_ok=True)
 
-
-    # Store the path relative to your server
     new_pattern = Pattern()
     db.session.add(new_pattern)
     db.session.flush()
-    filepath = user_upload_folder + '/' + filename
-    name, ext = os.path.splitext(filepath)
-    filepath = f"{name}_{new_pattern.id}{ext}"
 
-    new_pattern.image_path = filepath
-    
+    name, ext = os.path.splitext(filename)
+    s3_key = f"user_{current_user.id}/project_{projectID}/{name}_{new_pattern.id}{ext}"
+    new_pattern.image_path = s3_key
 
     project = Project.query.get(projectID)
-    # Add pattern to project using the relationship
     project.patterns.append(new_pattern)
-
     db.session.commit()
-    
-    # Save to YOUR server's filesystem
-    file.save(os.path.join(UPLOAD_FOLDER, filepath))
+
+    _s3().upload_fileobj(file, S3_BUCKET, s3_key)
 
     return jsonify({'success': True, 'pattern_id': new_pattern.id}), 200
 
@@ -121,14 +127,15 @@ def create_project():
 @resources.route('/uploads/<path:filename>')
 @login_required
 def serve_upload(filename):
-
-    return send_from_directory(UPLOAD_FOLDER, filename)
+    url = _presigned_url(filename)
+    if url is None:
+        return jsonify({'error': 'File not found'}), 404
+    return redirect(url)
 
 @resources.route('/uploads-tile-pattern/<int:pattern_id>')
 @login_required
 def serve_tile_pattern_request(pattern_id):
     pattern = Pattern.query.get_or_404(pattern_id)
-
     return serve_upload(pattern.image_path)
 
 
